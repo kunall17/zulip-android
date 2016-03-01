@@ -14,6 +14,7 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,6 +33,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
@@ -453,13 +455,24 @@ public class ZulipActivity extends FragmentActivity implements
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            // Get the SearchView and set the searchable configuration
-            SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-            final MenuItem searchMenuItem = menu.findItem(R.id.search);
-            SearchView searchView = (SearchView) searchMenuItem.getActionView();
-            // Assumes current activity is the searchable activity
-            searchView.setSearchableInfo(searchManager
-                    .getSearchableInfo(getComponentName()));
+
+            final SearchManager searchManager =
+                    (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+//        SearchView searchView =(SearchView) menu.findItem(R.id.search).getActionView();
+
+
+            final MenuItem mSearchMenuItem = menu.findItem(R.id.search);
+            final SearchView searchView =
+                    (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(
+                    new ComponentName(getApplicationContext(),
+                            ZulipActivity.class)));
+
+
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+
+            searchView.setIconifiedByDefault(false);
 
             searchView
                     .setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -467,7 +480,7 @@ public class ZulipActivity extends FragmentActivity implements
                         public boolean onQueryTextSubmit(String s) {
                             doNarrow(new NarrowFilterSearch(s));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                                searchMenuItem.collapseActionView();
+                                mSearchMenuItem.collapseActionView();
                             }
                             return true;
                         }
