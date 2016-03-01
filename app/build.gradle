@@ -1,14 +1,23 @@
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
 
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+dependencies {
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
+        transitive = true
+    }
+}
 android {
-    compileSdkVersion 17
+    compileSdkVersion 23
     buildToolsVersion "23.0.2"
-
+    useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.zulip.android"
         minSdkVersion 10
-        targetSdkVersion 17
-        useLibrary 'org.apache.http.legacy'
+        targetSdkVersion 23
+
         testApplicationId "com.zulip.android.test"
         testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
@@ -22,10 +31,15 @@ android {
 }
 
 dependencies {
+    //compile 'com.android.support:appcompat-v7:23.1.1'
+    //compile 'com.android.support:design:23.1.1'
+    //  compile files('libs/crashlytics.jar')
     compile 'com.google.android.gms:play-services:8.4.0'
+
     compile 'commons-lang:commons-lang:2.6'
     compile 'com.j256.ormlite:ormlite-android:4.45'
     compile 'com.j256.ormlite:ormlite-core:4.45'
     compile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
     compile 'commons-lang:commons-lang:2.6'
+
 }

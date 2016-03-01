@@ -50,6 +50,8 @@ import android.widget.TextView;
 import com.crashlytics.android.Crashlytics;
 import com.j256.ormlite.android.AndroidDatabaseResults;
 
+import io.fabric.sdk.android.Fabric;
+
 public class ZulipActivity extends FragmentActivity implements
         MessageListFragment.Listener {
 
@@ -157,7 +159,7 @@ public class ZulipActivity extends FragmentActivity implements
         if (Build.HARDWARE.contains("goldfish")) {
             Log.i("hardware", "running in emulator");
         } else {
-            Crashlytics.start(this);
+            Fabric.with(this, new Crashlytics());
         }
 
         app = (ZulipApp) getApplicationContext();
