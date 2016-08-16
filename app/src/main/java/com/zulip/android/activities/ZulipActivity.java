@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.ArrayList;
 
-import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -31,7 +30,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentManager;
@@ -49,7 +47,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.animation.Interpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -93,6 +90,9 @@ import com.zulip.android.networking.AsyncStatusUpdate;
 import com.zulip.android.networking.ZulipAsyncPushTask;
 
 import org.json.JSONObject;
+
+import static com.zulip.android.util.AnimationHelper.hideView;
+import static com.zulip.android.util.AnimationHelper.showView;
 
 public class ZulipActivity extends AppCompatActivity implements
         MessageListFragment.Listener, NarrowListener {
@@ -545,74 +545,18 @@ public class ZulipActivity extends AppCompatActivity implements
 
     public void displayChatBox(boolean show) {
         if (show) {
-            showView(chatBox);
+            showView(chatBox, 200);
         } else {
-            hideView(chatBox);
+            hideView(chatBox, 200);
         }
     }
 
     public void displayFAB(boolean show) {
         if (show) {
-            showView(fab);
+            showView(fab, 200);
         } else {
-            hideView(fab);
+            hideView(fab, 200);
         }
-    }
-
-    private void hideView(final View view) {
-        ViewPropertyAnimator animator = view.animate()
-                .translationY((view instanceof AppBarLayout) ? -1 * view.getHeight() : view.getHeight())
-                .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
-                .setDuration(200);
-
-        animator.setListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                view.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-            }
-        });
-        animator.start();
-    }
-
-    private void showView(final View view) {
-        ViewPropertyAnimator animator = view.animate()
-                .translationY(0)
-                .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
-                .setDuration(200);
-
-        animator.setListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-                view.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-            }
-        });
-        animator.start();
     }
 
     public void setupListViewAdapter() {
