@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.support.v7.widget.RecyclerView;
+import android.text.Spanned;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -30,6 +32,7 @@ import com.zulip.android.networking.response.events.UpdateMessageWrapper;
 import com.zulip.android.util.MutedTopics;
 import com.zulip.android.util.TypeSwapper;
 import com.zulip.android.util.ZLog;
+import com.zulip.android.viewholders.MessageHolder;
 import com.zulip.android.widget.ZulipWidget;
 
 import org.json.JSONException;
@@ -483,7 +486,7 @@ public class AsyncGetEvents extends Thread {
      *
      * @param updateEvents list of events {@link EventsBranch.BranchType#UPDATE_MESSAGE}
      */
-    private void processUpdateMessages(List<EventsBranch> updateEvents) {
+    private void processUpdateMessages(final List<EventsBranch> updateEvents) {
         final List<Integer> messageIds = new ArrayList<>();
         for (EventsBranch event : updateEvents) {
             UpdateMessageWrapper updateEvent = (UpdateMessageWrapper) event;
@@ -491,7 +494,6 @@ public class AsyncGetEvents extends Thread {
             if (message != null) {
                 message.setFormattedContent(updateEvent.getFormattedContent());
                 message.setHasBeenEdited(true);
-
                 // update the message in database
                 Dao<Message, Integer> messageDao = app.getDao(Message.class);
                 try {
@@ -507,9 +509,16 @@ public class AsyncGetEvents extends Thread {
             @Override
             public void run() {
                 RecyclerMessageAdapter adapter = mActivity.getCurrentMessageList().getAdapter();
+                int i = 0;
                 for (int id : messageIds) {
-                    // notify adapter data item changed
-                    adapter.notifyItemChanged(adapter.getItemIndex(id));
+                    int index = adapter.getItemIndex(id);
+                    if (index == -1) continue;
+                    RecyclerView.ViewHolder viewHolderForAdapterPosition = mActivity.getCurrentMessageList().getRecyclerView().findViewHolderForAdapterPosition(index);
+                    if (viewHolderForAdapterPosition != null && viewHolderForAdapterPosition instanceof MessageHolder) {
+                        UpdateMessageWrapper updateEvent = (UpdateMessageWrapper) updateEvents.get(i++);
+                        Spanned spanned = Message.formatContent(updateEvent.getFormattedContent(), app);
+                        ((MessageHolder) viewHolderForAdapterPosition).contentView.setText(spanned);
+                    }
                 }
             }
         });
