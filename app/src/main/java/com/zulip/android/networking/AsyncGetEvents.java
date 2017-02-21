@@ -508,15 +508,22 @@ public class AsyncGetEvents extends Thread {
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.d("SEEHERE", "2");
                 RecyclerMessageAdapter adapter = mActivity.getCurrentMessageList().getAdapter();
                 int i = 0;
+                Log.d("SEEHERE", "3");
                 for (int id : messageIds) {
+                    Log.d("SEEHERE", i + 4 + "i" + id);
                     int index = adapter.getItemIndex(id);
                     if (index == -1) continue;
+                    Log.d("SEEHERE", "4-" + index);
+
                     RecyclerView.ViewHolder viewHolderForAdapterPosition = mActivity.getCurrentMessageList().getRecyclerView().findViewHolderForAdapterPosition(index);
                     if (viewHolderForAdapterPosition != null && viewHolderForAdapterPosition instanceof MessageHolder) {
+                        Log.d("SEEHERE", "5");
                         UpdateMessageWrapper updateEvent = (UpdateMessageWrapper) updateEvents.get(i++);
                         Spanned spanned = Message.formatContent(updateEvent.getFormattedContent(), app);
+                        Log.d("SEEHERE", "6-" + spanned);
                         ((MessageHolder) viewHolderForAdapterPosition).contentView.setText(spanned);
                     }
                 }
